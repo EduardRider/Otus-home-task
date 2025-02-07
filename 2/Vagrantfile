@@ -9,8 +9,15 @@ Vagrant.configure("2") do |config|
 
   ##### Обновление ядра ##### 
   config.vm.provision "shell", inline: <<-SHELL
-    sudo apt-get update # Обновляем пакеты
-    sudo apt-get install -y linux-image-generic  # Устанавливаем последнюю версию ядра
-    sudo reboot # Для применения нового ядра перезагружаем виртуальную машину 
+    ### Скачиваем пакеты для обновления
+    wget https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.19/amd64/linux-headers-5.19.0-051900-generic_5.19.0-051900.202207312230_amd64.deb
+    wget https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.19/amd64/linux-image-unsigned-5.19.0-051900-generic_5.19.0-051900.202207312230_amd64.deb
+    wget https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.19/amd64/linux-modules-5.19.0-051900-generic_5.19.0-051900.202207312230_amd64.deb  
+    ### Устанавливаем скачанные пакеты
+    sudo dpkg -i *.deb
+    ### Обновляем загрузчик 
+    sudo update-grub
+    ### Перезагружаемся
+    sudo reboot
   SHELL
 end

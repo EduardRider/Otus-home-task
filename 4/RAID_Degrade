@@ -1,0 +1,13 @@
+- name: Configure RAID on Ubuntu
+  hosts: all
+  become: yes
+  
+  tasks:  
+    - name: Fail disk 
+      command: mdadm --manage /dev/md127 --fail /dev/sda2
+    
+    - name: Remove disk 
+      command: mdadm --manage /dev/md127 --remove /dev/sda2
+
+    - name: Add new disk 
+      command: mdadm --manage /dev/md127 --add /dev/sda3

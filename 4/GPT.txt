@@ -1,0 +1,36 @@
+Создаем 5 партиций
+sudo parted /dev/md127
+rm 1
+mklabel gpt
+mkpart primary 0% 20% 
+mkpart primary 20% 40% 
+mkpart primary 40% 60% 
+mkpart primary 60% 80% 
+mkpart primary 80% 100%
+
+Форматируем диск в ext4
+sudo mkfs.ext4 /dev/md127p1
+sudo mkfs.ext4 /dev/md127p2
+sudo mkfs.ext4 /dev/md127p3
+sudo mkfs.ext4 /dev/md127p4
+sudo mkfs.ext4 /dev/md127p5
+
+Создаем директории для монтирования
+sudo mkdir /home/user/partition1
+sudo mkdir /home/user/partition2
+sudo mkdir /home/user/partition3
+sudo mkdir /home/user/partition4
+sudo mkdir /home/user/partition5
+
+Настраиваем автоматическое монтирование 
+sudo nano /etc/fstab
+/dev/md127p1 /home/user/partition1 ext4 defaults 0 0
+/dev/md127p2 /home/user/partition2 ext4 defaults 0 0
+/dev/md127p3 /home/user/partition3 ext4 defaults 0 0
+/dev/md127p4 /home/user/partition4 ext4 defaults 0 0
+/dev/md127p5 /home/user/partition5 ext4 defaults 0 0
+
+Перечитываем /etc/fstab
+sudo mount -a
+проверяем что все смонтировалось
+df -hT

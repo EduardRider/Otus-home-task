@@ -1,0 +1,21 @@
+- name: Configure RAID on Ubuntu
+  hosts: all
+  become: yes
+  vars:
+    raid_name: "/dev/md127"  # Имя RAID
+
+  tasks:
+    
+    - name: Create RAID 1 array # Создаем RAID
+      shell: echo y | mdadm --create /dev/md127 --level=1 --raid-devices=2 /dev/sda1 /dev/sda2 
+    
+    - name: Filesystems # Саздаем файловую систему
+      command: mkfs.ext4 /dev/md127  
+  
+    - name:  # Монтируем RAID с добавление конфигурации для автоматического монтирования при загрузке 
+      mount:
+        path: /home/user/temp  
+        src: "{{ raid_name }}"
+        fstype: ext4  
+        opts: defaults
+        state: present

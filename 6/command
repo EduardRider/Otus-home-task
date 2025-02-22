@@ -1,0 +1,23 @@
+Task 1
+zpool create otus1 mirror /dev/sda /dev/sdb
+zpool create otus2 mirror /dev/sdc /dev/sdd
+zpool create otus3 mirror /dev/sde /dev/sdf
+zpool create otus4 mirror /dev/sdg /dev/sdh
+
+zfs set compression=lzjb otus1
+zfs set compression=lz4 otus2
+zfs set compression=gzip-9 otus3
+zfs set compression=zle otus4
+
+wget -P /otus1 https://gutenberg.org/cache/epub/2600/pg2600.converter.log
+wget -P /otus2 https://gutenberg.org/cache/epub/2600/pg2600.converter.log
+wget -P /otus3 https://gutenberg.org/cache/epub/2600/pg2600.converter.log
+wget -P /otus4 https://gutenberg.org/cache/epub/2600/pg2600.converter.log
+
+Task 2
+zpool import -d zpoolexport/ otus
+
+
+Task 3 
+wget -O otus_task2.file --no-check-certificate https://drive.usercontent.google.com/download?id=1wgxjih8YZ-cqLqaZVa0lA3h3Y029c3oI&export=download
+zfs receive otus/test@today < otus_task2.file

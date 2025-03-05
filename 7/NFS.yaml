@@ -1,0 +1,61 @@
+- name: Устанавливаем и настраеваем NFS-сервер
+  hosts: servers
+  become: yes
+  tasks:
+    - name: Установка NFS-сервера
+      apt:
+        name: nfs-kernel-server
+        state: present
+        update_cache: yes
+
+    - name: Создаем директорию /srv/share/upload
+      file:
+        path: /srv/share/upload
+        state: directory
+        owner: nobody
+        group: nogroup
+        mode: '0777'
+
+    - name: Настройка директории
+      lineinfile:
+        path: /etc/exports
+        line: "/srv/share/ 192.168.122.219/32(rw,sync,root_squash)"
+        create: yes
+        state: present
+
+    - name: Перезапуск NFS сервера
+      service:
+        name: nfs-kernel-server
+        state: restarted
+        
+- name: Устанавливаем и настраиваем NFS-клиент
+  hosts: clients
+  become: yes
+  tasks:
+    - name: 
+      apt:
+        name: nfs-common
+        state: present
+        update_cache: yes
+
+    - name: Создаем директорию /mnt для точки монтирования
+      file:
+        path: /mnt
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name:  # Монтируем шару 
+      mount:
+        path: /mnt 
+        src: 192.168.122.205:/srv/share/
+        fstype: nfs
+        opts: "rw,vers=3,noauto,x-systemd.automount"
+        state: present
+
+    - name: Перезагрузка systemd
+      command: systemctl daemon-reload
+
+    - name: Перезапуск remote-fs.target
+      command: systemctl restart remote-fs.target

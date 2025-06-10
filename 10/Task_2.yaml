@@ -1,0 +1,30 @@
+- name: TASK 2
+  hosts: servers
+  become: yes
+  
+  tasks:
+    - name: Обновляем apt-кеш
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Устанавливаем пакеты 
+      ansible.builtin.apt:
+        name:
+          - spawn-fcgi
+          - php
+          - php-cgi
+          - php-cli
+          - apache2
+          - libapache2-mod-fcgid
+    - name:  Копируем файл с настройками
+      ansible.builtin.copy: 
+        src: ./files/fcgi.conf
+        dest: /etc/spawn-fcgi/fcgi.conf
+    - name:  Копируем юнит-файл
+      ansible.builtin.copy: 
+        src: ./files/spawn-fcgi.service
+        dest: /etc/systemd/system/spawn-fcgi.service
+    - name: Старутуем spawn-fcgi
+      ansible.builtin.systemd:
+        name: spawn-fcgi  
+        state: started

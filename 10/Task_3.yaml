@@ -1,0 +1,28 @@
+- name: TASK 3
+  hosts: servers
+  become: yes
+  
+  tasks:
+  - name: Устанавливаем nginx
+    ansible.builtin.apt:
+        name: nginx
+  - name: # Копируем Unit для работы с шаблонами
+    ansible.builtin.copy: 
+      src: ./files/nginx@.service
+      dest: /etc/systemd/system/nginx@.service
+  - name: # Копируем файла конфигураци
+    ansible.builtin.copy: 
+      src: ./files/nginx-first.conf
+      dest: /etc/nginx/nginx-first.conf
+  - name: # Копируем файла конфигураци
+    ansible.builtin.copy: 
+      src: ./files/nginx-second.conf
+      dest: /etc/nginx/nginx-second.conf
+  - name: Запускаем nginx@first.service
+    ansible.builtin.systemd:
+      name: "nginx@first"
+      state: started
+  - name: Запускаем nginx@second.service
+    ansible.builtin.systemd:
+      name: "nginx@second"
+      state: started
